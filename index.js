@@ -31,15 +31,15 @@ function draw() {
   var maxTemp = d3.max(tempData);
   console.log(maxTemp);
 
+  var gennemsnit = d3.mean(tempData);
+  console.log(gennemsnit);
+
   //TEMPORARY COLORS FOR DEBUG
   const color = d3
     .scaleSequential(d3.interpolateBlues)
     .domain([minTemp, maxTemp]);
-  
-    var col = d3
-    .scaleSequential(d3.interpolateBlues)
-    .domain([minTemp, maxTemp]);
-  
+
+  var col = d3.scaleSequential(d3.interpolateBlues).domain([minTemp, maxTemp]);
 
   const color2 = d3
     .scaleSequential(d3.interpolateGreens)
@@ -123,7 +123,6 @@ function draw() {
     [800, 500],
   ];
 
-
   const backFrame2 = [
     [0, 500],
     [80, 430],
@@ -163,13 +162,18 @@ function draw() {
     [800, 500],
   ];
 
+
   const backWave = canvas
     .append("path")
-    .datum(backFrame1)
-    .attr("d", line)
+    .data(tempData)
+    .attr("d", line(backFrame1))
     .attr("stroke", color5(d3.mean(tempData)))
     //.attr("fill", "none")
-    .attr("fill", color5(d3.mean(tempData)));
+    .attr("fill", function (d, i) {
+      console.log("BACKWAVE D?: " + d)
+      console.log("BACKWAVE I?: " + i)
+      return color5(d);
+    });
 
   const frontWave = canvas
     .append("path")
@@ -181,40 +185,53 @@ function draw() {
 
   function animateBackWave() {
     backWave
-      .datum(backFrame1)
+      //.datum(backFrame1)
+      .data(tempData)
       .transition()
       .duration(1000)
       .ease(d3.easeLinear)
-      .attr("d", line)
+      .attr("d", line(backFrame1))
       .attr("stroke", color2(d3.mean(tempData)))
-      .attr("fill", color2(d3.mean(tempData)))
+      .attr("fill", function (d,i) {
+        console.log("BACKWAVE D?: " + d)
+        return color5(d);
+      })
       .on("end", () => {
         backWave
-          .datum(backFrame2)
+          //.datum(backFrame2)
+          .data(tempData)
           .transition()
           .duration(1000)
           .ease(d3.easeLinear)
-          .attr("d", line)
+          .attr("d", line(backFrame2))
           .attr("stroke", color3(d3.mean(tempData)))
-          .attr("fill", color3(d3.mean(tempData)))
+          .attr("fill", function (d) {
+            return color5(d);
+          })
           .on("end", () => {
             backWave
-              .datum(backFrame3)
+              //.datum(backFrame3)
+              .data(tempData)
               .transition()
               .duration(1000)
               .ease(d3.easeLinear)
-              .attr("d", line)
+              .attr("d", line(backFrame3))
               .attr("stroke", color4(d3.mean(tempData)))
-              .attr("fill", color4(d3.mean(tempData)))
+              .attr("fill", function (d) {
+                return color5(d);
+              })
               .on("end", () => {
                 backWave
-                  .datum(backFrame4)
+                  //.datum(backFrame4)
+                  .data(tempData)
                   .transition()
                   .duration(1000)
                   .ease(d3.easeLinear)
-                  .attr("d", line)
+                  .attr("d", line(backFrame4))
                   .attr("stroke", color5(d3.mean(tempData)))
-                  .attr("fill", color5(d3.mean(tempData)))
+                  .attr("fill", function (d) {
+                    return color5(d);
+                  })
                   .on("end", animateBackWave); // Loop back to the start
               });
           });
@@ -223,29 +240,29 @@ function draw() {
 
   function animate() {
     frontWave
-      .datum(frontFrame1)
+      //.datum(frontFrame1)
       .transition()
       .duration(1000)
       .ease(d3.easeLinear)
-      .attr("d", line)
+      .attr("d", line(frontFrame1))
       .attr("stroke", color(d3.mean(tempData)))
       .attr("fill", color(d3.mean(tempData)))
       .on("end", () => {
         frontWave
-          .datum(frontFrame2)
+          //.datum(frontFrame2)
           .transition()
           .duration(1000)
           .ease(d3.easeLinear)
-          .attr("d", line)
+          .attr("d", line(frontFrame2))
           .attr("stroke", color(d3.mean(tempData)))
           .attr("fill", color(d3.mean(tempData)))
           .on("end", () => {
             frontWave
-              .datum(frontFrame3)
+              //.datum(frontFrame3)
               .transition()
               .duration(1000)
               .ease(d3.easeLinear)
-              .attr("d", line)
+              .attr("d", line(frontFrame3))
               .attr("stroke", color(d3.mean(tempData)))
               .attr("fill", color(d3.mean(tempData)))
               .on("end", animate);
@@ -254,5 +271,7 @@ function draw() {
   }
 
   animateBackWave();
-  animate();
+    animate();
+
+  
 }
